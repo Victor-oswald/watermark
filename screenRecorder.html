@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Screen Recording and Screenshot</title>
+  <style>
+  </style>
+</head>
+<body>
+  <h1>Screen Recording and Screenshot</h1>
+
+  <button id="startButton">Start Recording</button>
+  <button id="stopButton" disabled>Stop Recording</button>
+  <button id="screenshotButton">Take Screenshot</button>
+
+  <script>
+    let mediaRecorder;
+    let recordedChunks = [];
+    const startButton = document.getElementById('startButton');
+    const stopButton = document.getElementById('stopButton');
+    const screenshotButton = document.getElementById('screenshotButton');
+
+    // Function to start recording
+    function startRecording() {
+      navigator.mediaDevices.getDisplayMedia({ video: true })
+        .then(function(stream) {
+          mediaRecorder = new MediaRecorder(stream);
+
+          mediaRecorder.ondataavailable = function(event) {
+            recordedChunks.push(event.data);
+          };
+
+          mediaRecorder.onstop = function() {
+            let recordedBlob = new Blob(recordedChunks, { type: 'video/webm' });
+            let recordingURL = URL.createObjectURL(recordedBlob);
+            let a = document.createElement('a');
+            a.href = recordingURL;
+            a.download = 'recorded-video.webm';
+            document.body.appendChild(a);
+            a.click();
+            URL.revokeObjectURL(recordingURL);
+            recordedChunks = [];
+            startButton.disabled = false;
+            stopButton.disabled = true;
+          };
+
+          mediaRecorder.start();
+          startButton.disabled = true;
+          stopButton.disabled = false;
+        })
+        .catch(function(err) {
+          console.error('Error accessing media devices.', err);
+        });
+    }
+
+    // Function to stop recording
+    function stopRecording() {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+      }
+    }
+
+    // Function to take a screenshot
+    function takeScreenshot() {
+      navigator.mediaDevices.getDisplayMedia({ video: true })
+        .then(function(stream) {
+          let videoTrack = stream.getVideoTracks()[0];
+          let imageCapture = new ImageCapture(videoTrack);
+          return imageCapture.grabFrame();
+        })
+        .then(function(imageBitmap) {
+          let canvas = document.createElement('canvas');
+          canvas.width = imageBitmap.width;
+          canvas.height = imageBitmap.height;
+          canvas.getContext('2d').drawImage(imageBitmap, 0, 0);
+          let screenshotURL = canvas.toDataURL('image/png');
+          let a = document.createElement('a');
+          a.href = screenshotURL;
+          a.download = 'screenshot.png';
+          document.body.appendChild(a);
+          a.click();
+        })
+        .catch(function(err) {
+          console.error('Error taking screenshot.', err);
+        });
+    }
+
+    startButton.addEventListener('click', startRecording);
+    stopButton.addEventListener('click', stopRecording);
+    screenshotButton.addEventListener('click', takeScreenshot);
+  </script>
+</body>
+</html>

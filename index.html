@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Watermarking Tool</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Image Watermarking Tool</h1>
+        <div class="upload-section">
+            <input type="file" id="imageInput" accept="image/*">
+            <label for="imageInput">Choose Image</label>
+        </div>
+        <div class="watermark-section">
+            <label for="watermarkText">Watermark Text:</label>
+            <input type="text" id="watermarkText" placeholder="Enter your watermark text">
+            <button id="applyWatermark">Apply Watermark</button>
+        </div>
+        <div class="output-section">
+            <h2>Watermarked Image</h2>
+            <img id="outputImage" alt="Watermarked Image">
+            <a id="downloadLink" download="watermarked_image.jpg">
+                <button id="downloadButton">Download Watermarked Image</button>
+            </a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
